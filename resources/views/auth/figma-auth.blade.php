@@ -14,9 +14,9 @@
         }
 
         .auth-wrapper {
-            max-width: 1100px;
-            margin: 40px auto;
-            padding: 0 16px;
+            max-width: 1300px;
+            margin: 80px auto;
+            padding: 0 32px;
         }
 
         .auth-grid {
@@ -34,10 +34,11 @@
         .auth-card {
             background-color: #f6f4f2;
             border: 1px solid #d1d5db;
-            border-radius: 24px;
-            padding: 48px 56px;
+            border-radius: 32px;
+            padding: 64px 80px;
             position: relative;
             overflow: hidden;
+            min-height: 940px;
         }
 
         .auth-card::before {
