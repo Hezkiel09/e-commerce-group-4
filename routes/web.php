@@ -59,7 +59,7 @@ Route::middleware('guest')->group(function () {
         return view('auth.figma-auth');
     })->name('login');
 
-    Route::get('/register', function () {
+    Route::get('/register', function () {  
         return view('auth.figma-auth');
     })->name('register');
 });
