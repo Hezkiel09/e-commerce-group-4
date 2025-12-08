@@ -14,7 +14,7 @@
         }
 
         .auth-wrapper {
-            max-width: 1300px;
+            max-width: 1600px;
             margin: 80px auto;
             padding: 0 32px;
         }
@@ -35,7 +35,7 @@
             background-color: #f6f4f2;
             border: 1px solid #d1d5db;
             border-radius: 32px;
-            padding: 64px 80px;
+            padding: 72px 96px;
             position: relative;
             overflow: hidden;
             min-height: 940px;

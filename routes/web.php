@@ -44,8 +44,6 @@ Route::middleware('auth')->group(function () {
 
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
-    Route::post('/profile/become-seller', [ProfileController::class, 'becomeSeller'])->name('profile.becomeSeller');
-
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 

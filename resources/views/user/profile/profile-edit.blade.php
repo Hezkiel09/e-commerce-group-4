@@ -63,10 +63,48 @@
                     <p class="text-sm text-green-600 mb-3">{{ session('status') }}</p>
                 @endif
 
+                {{-- Form pendaftaran seller hanya jika user belum jadi seller --}}
                 @if ($user->role !== 'seller')
-                    <form method="POST" action="{{ route('profile.becomeSeller') }}">
+                    <form method="POST" action="{{ route('profile.becomeSeller') }}" class="space-y-4">
                         @csrf
-                        <button class="px-4 py-2 border border-gray-800 rounded-md text-sm hover:bg-gray-100">
+                        
+                        {{-- Nama Toko --}}
+                        <div>
+                            <label for="store_name" class="block text-sm font-medium text-gray-700">Nama Toko</label>
+                            <input type="text" id="store_name" name="store_name" class="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300" required>
+                        </div>
+
+                        {{-- Deskripsi Toko --}}
+                        <div>
+                            <label for="store_about" class="block text-sm font-medium text-gray-700">Deskripsi Toko</label>
+                            <textarea id="store_about" name="store_about" rows="4" class="mt-1 block w-full px-4 py-2 rounded-lg border border-gray-300" required></textarea>
+                        </div>
+
+                        {{-- Nomor Telepon --}}
+                        <div>
+                            <label for="store_phone" class="block text-sm font-medium text-gray-700">Nomor Telepon</label>
+                            <input type="text" id="store_phone" name="store_phone" class="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300" required>
+                        </div>
+
+                        {{-- Alamat --}}
+                        <div>
+                            <label for="store_address" class="block text-sm font-medium text-gray-700">Alamat</label>
+                            <input type="text" id="store_address" name="store_address" class="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300" required>
+                        </div>
+
+                        {{-- Kota --}}
+                        <div>
+                            <label for="store_city" class="block text-sm font-medium text-gray-700">Kota</label>
+                            <input type="text" id="store_city" name="store_city" class="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300" required>
+                        </div>
+
+                        {{-- Kode Pos --}}
+                        <div>
+                            <label for="store_postcode" class="block text-sm font-medium text-gray-700">Kode Pos</label>
+                            <input type="text" id="store_postcode" name="store_postcode" class="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300" required>
+                        </div>
+
+                        <button type="submit" class="px-4 py-2 border border-gray-800 rounded-md text-sm hover:bg-gray-100">
                             Daftar jadi seller
                         </button>
                     </form>

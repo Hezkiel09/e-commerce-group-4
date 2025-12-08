@@ -24,36 +24,39 @@
     </nav>
 
     {{-- Right Icons --}}
-   <div class="flex items-center gap-6">
-    {{-- icon love --}}
-    <button class="border-2 border-black rounded-full w-10 h-10 flex items-center justify-center">
-        <img src="{{ asset('icons/love.jpg') }}" class="w-5 h-5" alt="love">
-    </button>
+    <div class="flex items-center gap-6">
+        {{-- Icon Bag --}}
+        <button class="border-2 border-black rounded-full w-10 h-10 flex items-center justify-center">
+            <img src="{{ asset('icons/bag.png') }}" class="w-5 h-5" alt="bag">
+        </button>
 
-    {{-- icon bag --}}
-    <button class="border-2 border-black rounded-full w-10 h-10 flex items-center justify-center">
-        <img src="{{ asset('icons/bag.png') }}" class="w-5 h-5" alt="bag">
-    </button>
+        @auth
+            {{-- If user is a seller, show the Seller Dashboard link --}}
+            @if(Auth::user()->role === 'seller')
+                <a href="{{ route('seller.dashboard') }}" class="border-2 border-black rounded-full w-10 h-10 flex items-center justify-center">
+                    <img src="{{ asset('icons/seller_dashboard.png') }}" class="w-5 h-5" alt="seller dashboard">
+                </a>
+            @endif
 
-    @auth
-        {{-- Kalau SUDAH login: icon profile + Logout --}}
-        <a href="{{ route('profile.edit') }}"
-           class="border-2 border-black rounded-full w-10 h-10 flex items-center justify-center">
-            <img src="{{ asset('icons/profile.png') }}" class="w-5 h-5" alt="profile">
-        </a>
+            {{-- Icon Profile --}}
+            <a href="{{ route('profile.edit') }}"
+               class="border-2 border-black rounded-full w-10 h-10 flex items-center justify-center">
+                <img src="{{ asset('icons/profile.png') }}" class="w-5 h-5" alt="profile">
+            </a>
 
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button class="border-2 border-black rounded-full px-4 py-2 text-sm">
-                Logout
-            </button>
-        </form>
-    @else
-        {{-- Kalau BELUM login: Login | Daftar --}}
-        <a href="{{ route('login') }}" class="text-sm hover:underline">Login</a>
-        <span>|</span>
-        <a href="{{ route('register') }}" class="text-sm hover:underline">Daftar</a>
-    @endauth
-</div>
+            {{-- Logout --}}
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button class="border-2 border-black rounded-full px-4 py-2 text-sm">
+                    Logout
+                </button>
+            </form>
+        @else
+            {{-- If not logged in, show login and register links --}}
+            <a href="{{ route('login') }}" class="text-sm hover:underline">Login</a>
+            <span>|</span>
+            <a href="{{ route('register') }}" class="text-sm hover:underline">Daftar</a>
+        @endauth
+    </div>
 
 </header>
