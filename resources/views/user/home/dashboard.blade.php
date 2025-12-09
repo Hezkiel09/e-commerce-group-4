@@ -12,7 +12,7 @@
 
     {{-- NAVBAR --}}
    {{-- NAVBAR --}}
-@include('layouts.store-navbar')
+@include('layouts.user.store-navbar')
 
 
     {{-- SEARCH --}}

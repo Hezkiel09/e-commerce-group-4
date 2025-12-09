@@ -11,7 +11,7 @@
 <body class="bg-noise text-gray-700 antialiased">
 
     {{-- NAVBAR --}}
-    @include('layouts.store-navbar')
+    @include('layouts.user.store-navbar')
 
     <main class="px-16 py-10">
         <h1 class="text-2xl font-semibold mb-6">Profile</h1>

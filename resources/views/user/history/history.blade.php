@@ -11,7 +11,7 @@
 <body class="bg-noise text-gray-700 antialiased">
 
     {{-- NAVBAR --}}
-    @include('layouts.store-navbar')
+    @include('layouts.user.store-navbar')
 
     {{-- PAGE WRAPPER --}}
     <main class="px-16 py-8">
