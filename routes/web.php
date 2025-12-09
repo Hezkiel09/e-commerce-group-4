@@ -4,7 +4,6 @@ use App\Http\Controllers\User\ProductController as UserProductController;
 use App\Http\Controllers\User\HistoryController;
 use App\Http\Controllers\Seller\ProductController as SellerProductController;
 use App\Http\Controllers\User\ProfileController;
-use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
 
 // Landing Page
@@ -45,6 +44,8 @@ Route::middleware('auth')->group(function () {
 
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
+    Route::post('/profile/become-seller', [ProfileController::class, 'becomeSeller'])->name('profile.becomeSeller');
+
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
@@ -63,25 +64,6 @@ Route::middleware('guest')->group(function () {
     })->name('register');
 });
 
-// ================= ADMIN SIDE =================
-
-Route::middleware(['auth', 'role:admin'])
-    ->prefix('admin')
-    ->name('admin.')
-    ->group(function () {
-        // Admin Dashboard
-        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-
-        // Store Verification
-        Route::get('/store-verification', [AdminController::class, 'storeVerification'])->name('storeVerification');
-        Route::post('/store/{storeId}/verify', [AdminController::class, 'verifyStore'])->name('store.verify');
-        Route::post('/store/{storeId}/reject', [AdminController::class, 'rejectStore'])->name('store.reject');
-
-        // Manage Users and Stores
-        Route::get('/users-and-stores', [AdminController::class, 'manageUsersAndStores'])->name('usersAndStores');
-        Route::delete('/user/{userId}', [AdminController::class, 'deleteUser'])->name('user.delete');
-        Route::delete('/store/{storeId}', [AdminController::class, 'deleteStore'])->name('store.delete');
-    });
 
 // ================= SELLER SIDE =================
 
@@ -89,9 +71,22 @@ Route::middleware(['auth', 'role:seller'])
     ->prefix('seller')
     ->name('seller.')
     ->group(function () {
-        Route::get('/dashboard', function () {
-            return view('seller.dashboard');
-        })->name('dashboard');
+        // Dashboard Seller
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+        // CRUD Produk
         Route::resource('/products', SellerProductController::class);
+
+        // Pesanan Masuk (Untuk melihat pesanan yang diterima oleh seller)
+        Route::resource('/orders', SellerOrderController::class);
+
+        // Saldo Toko (Untuk melihat saldo toko dan history saldo)
+        Route::resource('/balance', SellerBalanceController::class);
+
+        // Penarikan Dana (Untuk meminta penarikan dana oleh seller)
+        Route::resource('/withdrawals', SellerWithdrawalController::class);
+
+        // Profil Toko (Untuk mengedit dan melihat profil toko)
+        Route::get('/store', [SellerStoreController::class, 'edit'])->name('store.edit');
+        Route::patch('/store', [SellerStoreController::class, 'update'])->name('store.update');
     });

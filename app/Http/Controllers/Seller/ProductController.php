@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Seller;
+
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
@@ -8,6 +9,7 @@ use App\Models\ProductCategory;
 use App\Models\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -16,7 +18,6 @@ class ProductController extends Controller
     {
         return Store::where('user_id', Auth::id())->firstOrFail();
     }
-
 
     public function index()
     {
@@ -42,26 +43,32 @@ class ProductController extends Controller
     {
         $store = $this->currentStore();
 
+        // Validasi input tanpa slug, condition, dan weight
         $validated = $request->validate([
             'name'                => ['required', 'string', 'max:255'],
             'description'         => ['required', 'string'],
             'product_category_id' => ['required', 'exists:product_categories,id'],
-            'condition'           => ['required', 'in:new,second'],
             'price'               => ['required', 'numeric', 'min:0'],
-            'weight'              => ['required', 'integer', 'min:0'],
             'stock'               => ['required', 'integer', 'min:0'],
+            'image'               => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'], // Validasi gambar
         ]);
 
+        // Menyimpan gambar produk jika ada
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('product_images', 'public');
+        }
+
+        // Menyimpan produk baru
         Product::create([
             'store_id'            => $store->id,
             'product_category_id' => $validated['product_category_id'],
             'name'                => $validated['name'],
-            'slug'                => Str::slug($validated['name'] . '-' . uniqid()),
+            'slug'                => Str::slug($validated['name'] . '-' . uniqid()), // Menyimpan slug
             'description'         => $validated['description'],
-            'condition'           => $validated['condition'],
             'price'               => $validated['price'],
-            'weight'              => $validated['weight'],
             'stock'               => $validated['stock'],
+            'image'               => $imagePath,  // Menyimpan path gambar
         ]);
 
         return redirect()->route('seller.products.index')
@@ -89,23 +96,33 @@ class ProductController extends Controller
             abort(403, 'Unauthorized.');
         }
 
+        // Validasi input tanpa slug, condition, dan weight
         $validated = $request->validate([
             'name'                => ['required', 'string', 'max:255'],
             'description'         => ['required', 'string'],
             'product_category_id' => ['required', 'exists:product_categories,id'],
-            'condition'           => ['required', 'in:new,second'],
             'price'               => ['required', 'numeric', 'min:0'],
-            'weight'              => ['required', 'integer', 'min:0'],
             'stock'               => ['required', 'integer', 'min:0'],
+            'image'               => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'], // Validasi gambar
         ]);
 
+        // Jika gambar baru di-upload, hapus gambar lama dan simpan gambar baru
+        if ($request->hasFile('image')) {
+            // Hapus gambar lama jika ada
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
+            // Simpan gambar baru
+            $imagePath = $request->file('image')->store('product_images', 'public');
+            $product->image = $imagePath;
+        }
+
+        // Memperbarui data produk
         $product->update([
             'product_category_id' => $validated['product_category_id'],
             'name'                => $validated['name'],
             'description'         => $validated['description'],
-            'condition'           => $validated['condition'],
             'price'               => $validated['price'],
-            'weight'              => $validated['weight'],
             'stock'               => $validated['stock'],
         ]);
 
@@ -119,6 +136,11 @@ class ProductController extends Controller
 
         if ($product->store_id !== $store->id) {
             abort(403, 'Unauthorized.');
+        }
+
+        // Hapus gambar produk jika ada
+        if ($product->image) {
+            Storage::disk('public')->delete($product->image);
         }
 
         $product->delete();
