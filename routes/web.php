@@ -9,6 +9,7 @@ use App\Http\Controllers\Seller\SellerOrderController;
 use App\Http\Controllers\Seller\SellerBalanceController;
 use App\Http\Controllers\Seller\SellerWithdrawalController;
 use App\Http\Controllers\Seller\SellerStoreController;
+use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
 
 // Landing Page
@@ -74,4 +75,24 @@ Route::middleware(['auth', 'role:seller'])
 
         // Kategori Produk
         Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+    });
+
+    // ================= ADMIN SIDE =================
+
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        // Admin Dashboard
+        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+
+        // Store Verification
+        Route::get('/store-verification', [AdminController::class, 'storeVerification'])->name('storeVerification');
+        Route::post('/store/{storeId}/verify', [AdminController::class, 'verifyStore'])->name('store.verify');
+        Route::post('/store/{storeId}/reject', [AdminController::class, 'rejectStore'])->name('store.reject');
+
+        // Manage Users and Stores
+        Route::get('/users-and-stores', [AdminController::class, 'manageUsersAndStores'])->name('usersAndStores');
+        Route::delete('/user/{userId}', [AdminController::class, 'deleteUser'])->name('user.delete');
+        Route::delete('/store/{storeId}', [AdminController::class, 'deleteStore'])->name('store.delete');
     });

@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('guest')->group(function () {
     // REGISTER (halaman)
     Route::get('register', function () {
-        return view('auth.auth-combined');
+        return view('auth.figma-auth');
     })->name('register');
 
     // REGISTER (proses)
@@ -22,7 +22,7 @@ Route::middleware('guest')->group(function () {
 
     // LOGIN (halaman)
     Route::get('login', function () {
-        return view('auth.auth-combined');
+        return view('auth.figma-auth');
     })->name('login');
 
     // LOGIN (proses)

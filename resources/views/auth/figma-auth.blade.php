@@ -154,7 +154,7 @@
                             value="{{ old('email') }}"
                             placeholder="johndoe@gmail.com"
                             required
-                            class="auth-input">
+                            class="auth-input {{ $errors->has('email') ? 'border border-red-500' : '' }}">
 
                         <!-- Error Message for Email -->
                         @error('email')
@@ -167,7 +167,7 @@
                             name="password"
                             placeholder="Johndoe123"
                             required
-                            class="auth-input">
+                            class="auth-input {{ $errors->has('password') ? 'border border-red-500' : '' }}">
                         <!-- Error Message for Password -->
                         @error('password')
                         <div class="text-red-600 text-sm mt-2">{{ $message }}</div>
@@ -238,7 +238,7 @@
                                 value="{{ old('name') }}"
                                 placeholder="John Doe"
                                 required
-                                class="auth-input">
+                                class="auth-input {{ $errors->has('name') ? 'border border-red-500' : '' }}">
                         </div>
 
                         <div>
@@ -249,7 +249,7 @@
                                 value="{{ old('email') }}"
                                 placeholder="johndoe@gmail.com"
                                 required
-                                class="auth-input">
+                                class="auth-input {{ $errors->has('email') ? 'border border-red-500' : '' }}">
                         </div>
 
                         <div>
@@ -259,7 +259,7 @@
                                 name="password"
                                 placeholder="Johndoe123"
                                 required
-                                class="auth-input">
+                                class="auth-input {{ $errors->has('password') ? 'border border-red-500' : '' }}">
                         </div>
 
                         <input
@@ -267,7 +267,7 @@
                             name="password_confirmation"
                             placeholder="Confirm password"
                             required
-                            class="auth-input">
+                            class="auth-input {{ $errors->has('password_confirmation') ? 'border border-red-500' : '' }}">
 
                         <button type="submit" class="btn-main">
                             Sign Up

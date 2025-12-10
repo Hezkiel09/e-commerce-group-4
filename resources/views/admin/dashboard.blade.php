@@ -1,6 +1,4 @@
 <!-- resources/views/admin/dashboard.blade.php -->
-
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
@@ -9,11 +7,9 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-noise text-gray-700 antialiased">
-    @include('layouts.admin.admin-navbar') <!-- Optional: Navbar from other layout -->
+    @include('layouts.admin.admin-navbar') <!-- Navbar with Logo and Title -->
 
     <main class="px-16 py-10">
-        <h1 class="text-2xl font-semibold mb-6">Admin Dashboard</h1>
-
         <div class="grid grid-cols-3 gap-8">
             <!-- Store Verification -->
             <div class="bg-white shadow-sm rounded-xl p-6">
@@ -26,7 +22,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($stores as $store)
+                        @foreach ($storesUnverified as $store)
                             <tr class="border-b">
                                 <td class="px-4 py-2">{{ $store->name }}</td>
                                 <td class="px-4 py-2">
@@ -84,7 +80,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($stores as $store)
+                        @foreach ($storesVerified as $store)
                             <tr class="border-b">
                                 <td class="px-4 py-2">{{ $store->name }}</td>
                                 <td class="px-4 py-2">
@@ -100,7 +96,7 @@
                 </table>
             </div>
         </div>
+
     </main>
 </body>
 </html>
-                    

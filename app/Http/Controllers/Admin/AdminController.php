@@ -10,43 +10,44 @@ use App\Http\Controllers\Controller;
 class AdminController extends Controller
 {
     // Menampilkan halaman Dashboard Admin
-    public function dashboard()
-    {
-        // Ambil data store yang belum diverifikasi
-        $stores = Store::where('is_verified', false)->get();
-        // ambil user dari database
-        $users = User::all();
+   public function dashboard()
+{
+    // Ambil data store yang sudah diverifikasi
+    $storesVerified = Store::where('is_verified', true)->get();
+    // Ambil data store yang belum diverifikasi
+    $storesUnverified = Store::where('is_verified', false)->get();
+    // Ambil data user
+    $users = User::all();
 
-        // Kirimkan data $stores ke view admin.dashboard
-        return view('admin.dashboard', compact('stores', 'users'));
-    }
+    // Kirimkan data $storesVerified dan $storesUnverified ke view admin.dashboard
+    return view('admin.dashboard', compact('storesVerified', 'storesUnverified', 'users'));
+}
 
-    // Menampilkan halaman verifikasi toko
-    public function storeVerification()
-    {
-        $stores = Store::where('is_verified', false)->get(); // Menampilkan toko yang belum diverifikasi
-        return view('admin.store-verification', compact('stores'));
-    }
+public function storeVerification()
+{
+    // Ambil data toko yang belum diverifikasi
+    $stores = Store::where('is_verified', false)->get();
+    return view('admin.store-verification', compact('stores'));
+}
 
-    // Verifikasi toko
-    public function verifyStore($storeId)
-    {
-        $store = Store::findOrFail($storeId);
-        $store->is_verified = true;
-        $store->save();
+public function verifyStore($storeId)
+{
+    $store = Store::findOrFail($storeId);
+    $store->is_verified = true;  // Set toko sebagai terverifikasi
+    $store->save();
 
-        return back()->with('status', 'Store Verified');
-    }
+    return back()->with('status', 'Store Verified');
+}
 
-    // Tolak toko
-    public function rejectStore($storeId)
-    {
-        $store = Store::findOrFail($storeId);
-        $store->is_verified = false;
-        $store->save();
+public function rejectStore($storeId)
+{
+    $store = Store::findOrFail($storeId);
+    $store->is_verified = false;  // Set toko sebagai ditolak
+    $store->save();
 
-        return back()->with('status', 'Store Rejected');
-    }
+    return back()->with('status', 'Store Rejected');
+}
+
 
     // Menampilkan semua user dan store
     public function manageUsersAndStores()

@@ -42,8 +42,11 @@
                                 value="{{ old('email') }}"
                                 placeholder="johndoe@gmail.com"
                                 required
-                                class="w-full px-4 py-2.5 rounded-full bg-gray-200 border border-transparent focus:border-gray-500 focus:ring-0 text-sm"
+                                class="w-full px-4 py-2.5 rounded-full bg-gray-200 border {{ $errors->has('email') ? 'border-red-500' : 'border-transparent' }} focus:border-gray-500 focus:ring-0 text-sm"
                             >
+                            @error('email')
+                                <div class="text-red-500 text-xs mt-1 ml-2">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div>
@@ -52,8 +55,11 @@
                                 name="password"
                                 placeholder="Johndoe123"
                                 required
-                                class="w-full px-4 py-2.5 rounded-full bg-gray-200 border border-transparent focus:border-gray-500 focus:ring-0 text-sm"
+                                class="w-full px-4 py-2.5 rounded-full bg-gray-200 border {{ $errors->has('password') ? 'border-red-500' : 'border-transparent' }} focus:border-gray-500 focus:ring-0 text-sm"
                             >
+                            @error('password')
+                                <div class="text-red-500 text-xs mt-1 ml-2">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <button
@@ -134,8 +140,11 @@
                                 value="{{ old('name') }}"
                                 placeholder="John Doe"
                                 required
-                                class="w-full px-4 py-2.5 rounded-full bg-gray-200 border border-transparent focus:border-gray-500 focus:ring-0 text-sm"
+                                class="w-full px-4 py-2.5 rounded-full bg-gray-200 border {{ $errors->has('name') ? 'border-red-500' : 'border-transparent' }} focus:border-gray-500 focus:ring-0 text-sm"
                             >
+                            @error('name')
+                                <div class="text-red-500 text-xs mt-1 ml-2">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div>
@@ -148,8 +157,11 @@
                                 value="{{ old('email') }}"
                                 placeholder="johndoe@gmail.com"
                                 required
-                                class="w-full px-4 py-2.5 rounded-full bg-gray-200 border border-transparent focus:border-gray-500 focus:ring-0 text-sm"
+                                class="w-full px-4 py-2.5 rounded-full bg-gray-200 border {{ $errors->has('email') ? 'border-red-500' : 'border-transparent' }} focus:border-gray-500 focus:ring-0 text-sm"
                             >
+                            @error('email')
+                                <div class="text-red-500 text-xs mt-1 ml-2">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div>
@@ -161,8 +173,11 @@
                                 name="password"
                                 placeholder="Johndoe123"
                                 required
-                                class="w-full px-4 py-2.5 rounded-full bg-gray-200 border border-transparent focus:border-gray-500 focus:ring-0 text-sm"
+                                class="w-full px-4 py-2.5 rounded-full bg-gray-200 border {{ $errors->has('password') ? 'border-red-500' : 'border-transparent' }} focus:border-gray-500 focus:ring-0 text-sm"
                             >
+                            @error('password')
+                                <div class="text-red-500 text-xs mt-1 ml-2">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div>
@@ -171,8 +186,11 @@
                                 name="password_confirmation"
                                 placeholder="Confirm password"
                                 required
-                                class="w-full px-4 py-2.5 rounded-full bg-gray-200 border border-transparent focus:border-gray-500 focus:ring-0 text-sm"
+                                class="w-full px-4 py-2.5 rounded-full bg-gray-200 border {{ $errors->has('password_confirmation') ? 'border-red-500' : 'border-transparent' }} focus:border-gray-500 focus:ring-0 text-sm"
                             >
+                            @error('password_confirmation')
+                                <div class="text-red-500 text-xs mt-1 ml-2">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <button
