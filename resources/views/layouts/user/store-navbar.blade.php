@@ -1,5 +1,4 @@
 <header class="w-full px-12 py-6 flex items-center justify-between">
-
     {{-- Left: Logo --}}
     <div class="flex items-center">
         <img src="{{ asset('icons/iconmpruy-removebg-preview.png') }}" class="w-20 h-20 object-contain" alt="Logo">
@@ -12,9 +11,9 @@
                 <!-- Seller-specific Menu -->
                 <a href="{{ route('seller.dashboard') }}" class="hover:text-black {{ request()->routeIs('seller.dashboard') ? 'font-semibold' : '' }}">Dashboard</a>
                 <a href="{{ route('seller.products.index') }}" class="hover:text-black {{ request()->routeIs('seller.products.index') ? 'font-semibold' : '' }}">Produk</a>
-                <a href="{{ route('seller.orders.index') }}" class="hover:text-black {{ request()->routeIs('seller.orders.index') ? 'font-semibold' : '' }}">Pesanan</a>
-                <a href="{{ route('seller.balance.index') }}" class="hover:text-black {{ request()->routeIs('seller.balance.index') ? 'font-semibold' : '' }}">Saldo</a>
-                <a href="{{ route('seller.withdrawals.index') }}" class="hover:text-black {{ request()->routeIs('seller.withdrawals.index') ? 'font-semibold' : '' }}">Penarikan Dana</a>
+                <a href="{{ route('seller.orders.index') }}" class="hover:text-black {{ request()->routeIs('seller.orders.index') ? 'font-semibold' : '' }}">Orders</a>
+                <a href="{{ route('seller.balance.index') }}" class="hover:text-black {{ request()->routeIs('seller.balance.index') ? 'font-semibold' : '' }}">Balance</a>
+                <a href="{{ route('seller.withdrawals.index') }}" class="hover:text-black {{ request()->routeIs('seller.withdrawals.index') ? 'font-semibold' : '' }}">Withdrawal</a>
             @else
                 <!-- Regular User Menu -->
                 <a href="{{ route('dashboard') }}" class="hover:text-black {{ request()->routeIs('dashboard') ? 'font-semibold' : '' }}">Home</a>
