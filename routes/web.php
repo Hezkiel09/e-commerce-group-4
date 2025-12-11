@@ -56,8 +56,12 @@ Route::middleware('auth')->group(function () {
 
     // Cart
     Route::resource('cart', CartController::class)->only(['index', 'store', 'destroy']);
+    Route::patch('/cart/{cart}', [CartController::class, 'update'])->name('cart.update'); // Add update route
     Route::post('/cart/add/{product}', [CartController::class, 'addToCart'])->name('cart.add');
     Route::post('/cart/buy/{product}', [CartController::class, 'buyNow'])->name('cart.buy');
+
+    // Checkout
+    Route::get('/checkout', [\App\Http\Controllers\User\CheckoutController::class, 'index'])->name('checkout.index');
 });
 
 require __DIR__.'/auth.php';

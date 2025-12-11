@@ -29,10 +29,18 @@
                     <img src="{{ asset('icons/store.png') }}" class="w-5 h-5" alt="seller dashboard">
                 </a>
             @else
-                {{-- Icon Checkout for regular user --}}
-                <button class="border-2 border-black rounded-full w-10 h-10 flex items-center justify-center">
-                    <img src="{{ asset('icons/checkout.png') }}" class="w-5 h-5" alt="bag">
-                </button>
+                {{-- Cart Icon for regular user --}}
+                <a href="{{ route('cart.index') }}" class="border-2 border-black rounded-full w-10 h-10 flex items-center justify-center relative">
+                    <img src="{{ asset('icons/checkout.png') }}" class="w-5 h-5" alt="cart">
+                    @php
+                        $cartCount = \App\Models\Cart::where('user_id', auth()->id())->sum('quantity');
+                    @endphp
+                    @if($cartCount > 0)
+                        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-semibold">
+                            {{ $cartCount > 99 ? '99+' : $cartCount }}
+                        </span>
+                    @endif
+                </a>
             @endif
 
             {{-- Icon Profile --}}

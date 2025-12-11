@@ -66,12 +66,25 @@
                     <p>{{ $product->description }}</p>
                 </div>
 
+                {{-- Quantity Selector --}}
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
+                    <div class="flex items-center border border-gray-300 rounded w-max">
+                        <button type="button" onclick="updateQuantity(-1)" class="px-3 py-2 hover:bg-gray-100 text-gray-600 focus:outline-none">-</button>
+                        <input type="text" inputmode="numeric" id="visible-quantity" value="1" 
+                               class="w-16 text-center border-none focus:ring-0 text-gray-900" 
+                               onchange="syncQuantity(this.value)"
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        <button type="button" onclick="updateQuantity(1)" class="px-3 py-2 hover:bg-gray-100 text-gray-600 focus:outline-none">+</button>
+                    </div>
+                </div>
+
                 {{-- Actions --}}
                 <div class="flex gap-4">
                     {{-- Buy Now Form --}}
                     <form action="{{ route('cart.buy', $product->id) }}" method="POST" class="flex-1">
                         @csrf
-                        <input type="hidden" name="quantity" value="1">
+                        <input type="hidden" name="quantity" id="buy-quantity" value="1">
                         <button type="submit" class="w-full bg-black text-white px-8 py-3 rounded hover:bg-gray-800 transition font-medium">
                             Buy Now
                         </button>
@@ -80,12 +93,38 @@
                     {{-- Add to Cart Form --}}
                     <form action="{{ route('cart.add', $product->id) }}" method="POST" class="flex-1">
                         @csrf
-                        <input type="hidden" name="quantity" value="1">
+                        <input type="hidden" name="quantity" id="cart-quantity" value="1">
                         <button type="submit" class="w-full border border-black text-black px-8 py-3 rounded hover:bg-gray-50 transition font-medium">
                             Add to Cart
                         </button>
                     </form>
                 </div>
+
+                <script>
+                    function updateQuantity(change) {
+                        const input = document.getElementById('visible-quantity');
+                        let newValue = parseInt(input.value) + change;
+                        
+                        // Validate bounds
+                        const max = {{ $product->stock }};
+                        if (newValue < 1) newValue = 1;
+                        if (newValue > max) newValue = max;
+                        
+                        input.value = newValue;
+                        syncQuantity(newValue);
+                    }
+
+                    function syncQuantity(value) {
+                        // Ensure value is within bounds
+                        const max = {{ $product->stock }};
+                        if (value < 1) value = 1;
+                        if (value > max) value = max;
+
+                        document.getElementById('visible-quantity').value = value;
+                        document.getElementById('buy-quantity').value = value;
+                        document.getElementById('cart-quantity').value = value;
+                    }
+                </script>
 
                  {{-- Store Info --}}
                  <div class="mt-10 pt-6 border-t border-gray-100 flex items-center gap-4">

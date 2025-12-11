@@ -36,16 +36,50 @@ class ProductController extends Controller
             });
         }
 
-        $products = $query->latest()->paginate(9)->withQueryString();
+        $products = $query->paginate(12); // Changed from get() to paginate()
 
         return view('user.products.products', compact('products'));
     }
 
+    // halaman /products/{slug}
     public function show(Product $product)
     {
-        // Load relationships needed for detail page
-        $product->load(['store', 'category', 'productImages', 'productReviews']);
-        
-        return view('user.products.show', compact('product'));
+        // Eager load relationships
+        $product->load(['productImages', 'store', 'category', 'productReviews.transaction.user']);
+
+        // Calculate average rating
+        $averageRating = $product->productReviews()->avg('rating') ?? 0;
+        $totalReviews = $product->productReviews()->count();
+
+        // Check if current user has purchased this product
+        $hasPurchased = false;
+        $canReview = false;
+        $hasReviewed = false;
+
+        if (auth()->check()) {
+            // Get buyer_id for current user
+            $buyer = \App\Models\Buyer::where('user_id', auth()->id())->first();
+
+            if ($buyer) {
+                // Check if user has paid transaction with this product
+                $hasPurchased = \App\Models\Transaction::where('buyer_id', $buyer->id)
+                    ->where('payment_status', 'paid')
+                    ->whereHas('transactionDetails', function($query) use ($product) {
+                        $query->where('product_id', $product->id);
+                    })
+                    ->exists();
+
+                // Check if user has already reviewed this product
+                $hasReviewed = \App\Models\ProductReview::whereHas('transaction', function($query) use ($buyer) {
+                        $query->where('buyer_id', $buyer->id);
+                    })
+                    ->where('product_id', $product->id)
+                    ->exists();
+
+                $canReview = $hasPurchased && !$hasReviewed;
+            }
+        }
+
+        return view('user.products.show', compact('product', 'averageRating', 'totalReviews', 'canReview', 'hasPurchased', 'hasReviewed'));
     }
 }

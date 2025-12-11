@@ -38,7 +38,23 @@
                                 <div class="text-sm text-gray-900">Rp {{ number_format($cart->product->price, 0, ',', '.') }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">{{ $cart->quantity }}</div>
+                                <div class="flex items-center border border-gray-300 rounded w-max">
+                                    <form action="{{ route('cart.update', $cart->id) }}" method="POST" class="inline-block">
+                                        @csrf
+                                        @method('PATCH')
+                                        <input type="hidden" name="quantity" value="{{ $cart->quantity - 1 }}">
+                                        <button type="submit" class="px-2 py-1 hover:bg-gray-100 text-gray-600 focus:outline-none" {{ $cart->quantity <= 1 ? 'disabled' : '' }}>-</button>
+                                    </form>
+                                    
+                                    <span class="px-2 text-sm text-gray-900 w-8 text-center">{{ $cart->quantity }}</span>
+                                    
+                                    <form action="{{ route('cart.update', $cart->id) }}" method="POST" class="inline-block">
+                                        @csrf
+                                        @method('PATCH')
+                                        <input type="hidden" name="quantity" value="{{ $cart->quantity + 1 }}">
+                                        <button type="submit" class="px-2 py-1 hover:bg-gray-100 text-gray-600 focus:outline-none" {{ $cart->quantity >= $cart->product->stock ? 'disabled' : '' }}>+</button>
+                                    </form>
+                                </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-900">Rp {{ number_format($cart->product->price * $cart->quantity, 0, ',', '.') }}</div>
@@ -62,9 +78,9 @@
                     <span>Total:</span>
                     <span>Rp {{ number_format($carts->sum(fn($c) => $c->product->price * $c->quantity), 0, ',', '.') }}</span>
                 </div>
-                <button class="bg-black text-white px-8 py-3 rounded hover:bg-gray-800 transition w-full">
+                <a href="{{ route('checkout.index') }}" class="block bg-black text-white px-8 py-3 rounded hover:bg-gray-800 transition w-full text-center">
                     Proceed to Checkout
-                </button>
+                </a>
             </div>
         </div>
     @else
