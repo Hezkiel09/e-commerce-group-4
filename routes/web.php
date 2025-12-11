@@ -70,7 +70,7 @@ Route::middleware('auth')->group(function () {
 require __DIR__.'/auth.php';
 
 // ================= SELLER SIDE =================
-Route::middleware(['auth', 'role:seller'])
+Route::middleware(['auth', 'role:seller', 'store.verified'])
     ->prefix('seller')
     ->name('seller.')
     ->group(function () {

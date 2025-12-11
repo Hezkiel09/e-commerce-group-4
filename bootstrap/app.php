@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
             // alias baru kita
             'role' => \App\Http\Middleware\RoleMiddleware::class,
              'admin' =>\App\Http\Middleware\AdminMiddleware::class,  // Tambahkan middleware admin
+             'store.verified' => \App\Http\Middleware\EnsureStoreVerified::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
