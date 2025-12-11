@@ -31,12 +31,14 @@
         @csrf
         <div class="mb-4">
             <label for="amount" class="block text-sm font-medium text-gray-700">Jumlah Penarikan (Min: Rp 10.000)</label>
-            <input type="number" name="amount" class="mt-1 w-full border rounded-md px-3 py-2" min="10000" max="{{ $store->balance ? $store->balance->balance : 0 }}" required>
+            <input type="number" name="amount" class="mt-1 w-full border rounded-md px-3 py-2" min="10000" max="{{ $store->balance ? $store->balance->balance : 0 }}" placeholder="Contoh: 50000" required>
+            <p class="text-xs text-gray-500 mt-1">Masukkan nominal tanpa titik atau koma.</p>
         </div>
 
         <div class="mb-4">
             <label for="bank" class="block text-sm font-medium text-gray-700">Pilih Bank</label>
             <select name="bank" class="mt-1 w-full border rounded-md px-3 py-2" required>
+                <option value="" disabled selected>Pilih Bank Tujuan</option>
                 <option value="BCA">BCA</option>
                 <option value="Mandiri">Mandiri</option>
                 <option value="BNI">BNI</option>
@@ -47,12 +49,12 @@
 
         <div class="mb-4">
             <label for="account_number" class="block text-sm font-medium text-gray-700">Nomor Rekening</label>
-            <input type="text" name="account_number" class="mt-1 w-full border rounded-md px-3 py-2" required>
+            <input type="text" name="account_number" class="mt-1 w-full border rounded-md px-3 py-2" placeholder="Contoh: 1234567890" required>
         </div>
 
         <div class="mb-4">
             <label for="account_name" class="block text-sm font-medium text-gray-700">Nama Rekening</label>
-            <input type="text" name="account_name" class="mt-1 w-full border rounded-md px-3 py-2" required>
+            <input type="text" name="account_name" class="mt-1 w-full border rounded-md px-3 py-2" placeholder="Contoh: John Doe" required>
         </div>
 
         <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700" {{ !$store->balance ? 'disabled' : '' }}>

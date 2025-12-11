@@ -89,7 +89,7 @@
                 {{-- Tops Category --}}
                 <a href="{{ route('products', ['category' => 'Top']) }}" class="group relative h-[400px] overflow-hidden rounded-2xl cursor-pointer">
                     <div class="absolute inset-0 bg-gray-900/20 group-hover:bg-gray-900/30 w-full h-full z-10 transition-colors"></div>
-                    <img src="{{ asset('images/white-man-sit.png') }}" class="w-full h-full object-cover object-top transform group-hover:scale-105 transition duration-700">
+                    <img src="{{ asset('images/black-man-stand.png') }}" class="w-full h-full object-cover object-top transform group-hover:scale-105 transition duration-700">
                     <div class="absolute inset-0 flex flex-col items-center justify-center z-20 text-white">
                         <span class="text-sm font-medium tracking-widest uppercase mb-2 opacity-0 transform translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition duration-300">Collection</span>
                         <h3 class="text-4xl font-serif font-bold">Tops</h3>
@@ -102,7 +102,7 @@
                 {{-- Bottoms Category --}}
                 <a href="{{ route('products', ['category' => 'Bottom']) }}" class="group relative h-[400px] overflow-hidden rounded-2xl cursor-pointer">
                     <div class="absolute inset-0 bg-gray-900/20 group-hover:bg-gray-900/30 w-full h-full z-10 transition-colors"></div>
-                    <img src="{{ asset('images/black-man-stand.png') }}" class="w-full h-full object-cover object-center transform group-hover:scale-105 transition duration-700">
+                    <img src="{{ asset('images/white-man-sit.png') }}" class="w-full h-full object-cover object-center transform group-hover:scale-105 transition duration-700">
                     <div class="absolute inset-0 flex flex-col items-center justify-center z-20 text-white">
                         <span class="text-sm font-medium tracking-widest uppercase mb-2 opacity-0 transform translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition duration-300">Collection</span>
                         <h3 class="text-4xl font-serif font-bold">Bottoms</h3>

@@ -36,7 +36,14 @@
                             </span>
                         </td>
                         <td class="px-4 py-2">Rp {{ number_format($item->amount, 0, ',', '.') }}</td>
-                        <td class="px-4 py-2">{{ $item->remarks }}</td>
+                        <td class="px-4 py-2">
+                            {{ $item->remarks }}
+                            @if($item->reference_type === 'App\Models\Transaction' && $item->reference_id)
+                                <a href="{{ route('seller.orders.show', $item->reference_id) }}" class="text-blue-600 hover:text-blue-800 text-xs block mt-1">
+                                    Lihat Detail
+                                </a>
+                            @endif
+                        </td>
                     </tr>
                 @empty
                     <tr>

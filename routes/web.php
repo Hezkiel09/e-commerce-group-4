@@ -62,6 +62,9 @@ Route::middleware('auth')->group(function () {
 
     // Checkout
     Route::get('/checkout', [\App\Http\Controllers\User\CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout', [\App\Http\Controllers\User\CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/checkout/payment', [\App\Http\Controllers\User\CheckoutController::class, 'payment'])->name('checkout.payment');
+    Route::post('/checkout/pay', [\App\Http\Controllers\User\CheckoutController::class, 'processPayment'])->name('checkout.pay');
 });
 
 require __DIR__.'/auth.php';

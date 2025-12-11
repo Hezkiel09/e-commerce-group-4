@@ -13,7 +13,11 @@ class OrderController extends Controller
     public function index()
     {
         $store = auth()->user()->store;
-        $orders = \App\Models\Order::where('store_id', $store->id)->latest()->get();
+        // Eager load buyer and their user data
+        $orders = \App\Models\Transaction::with('buyer.user')
+                    ->where('store_id', $store->id)
+                    ->latest()
+                    ->get();
         return view('seller.orders.index', compact('orders'));
     }
 
@@ -36,9 +40,14 @@ class OrderController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $store = auth()->user()->store;
+        $transaction = \App\Models\Transaction::with(['details.product.productImages', 'buyer.user'])
+                        ->where('store_id', $store->id)
+                        ->findOrFail($id);
+                        
+        return view('seller.orders.show', compact('transaction'));
     }
 
     /**

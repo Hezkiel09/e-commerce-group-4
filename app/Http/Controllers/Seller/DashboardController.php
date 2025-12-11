@@ -18,7 +18,7 @@ class DashboardController extends Controller
 
         // Ambil total produk dan pesanan
         $totalProducts = $store->products->count();
-        $totalOrders = Order::where('store_id', $store->id)->count();
+        $totalOrders = \App\Models\Transaction::where('store_id', $store->id)->count();
 
         return view('seller.dashboard', [
             'store' => $store,

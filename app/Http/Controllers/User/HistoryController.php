@@ -11,11 +11,17 @@ class HistoryController extends Controller
 {
     public function index(): View
     {
-        // Ambil data order milik user yang sedang login
-        $transactions = \App\Models\Order::with('store')
-            ->where('user_id', Auth::id())
-            ->latest()
-            ->get();
+        // Get Buyer ID for current user
+        $buyer = \App\Models\Buyer::where('user_id', Auth::id())->first();
+
+        if (!$buyer) {
+            $transactions = collect();
+        } else {
+            $transactions = \App\Models\Transaction::with('store', 'transactionDetails.product.productImages')
+                ->where('buyer_id', $buyer->id)
+                ->latest()
+                ->get();
+        }
 
         return view('user.history.history', compact('transactions'));
     }
