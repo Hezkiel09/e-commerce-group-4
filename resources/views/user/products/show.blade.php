@@ -35,18 +35,38 @@
                 @endif
             </div>
 
+            
             {{-- Product Details --}}
             <div>
                 <h1 class="text-3xl font-serif font-bold text-gray-900 mb-2">{{ $product->name }}</h1>
                 <div class="flex items-center gap-4 mb-6">
                     <span class="text-2xl font-medium text-gray-900">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
                     
-                    {{-- Rating --}}
+                    {{-- Dynamic Rating --}}
                     <div class="flex items-center text-yellow-500 text-sm">
-                        @for($i=0; $i<5; $i++)
-                            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+                        @php
+                            $rating = $averageRating;
+                            $fullStars = floor($rating);
+                            $halfStar = $rating - $fullStars >= 0.5;
+                        @endphp
+                        @for($i=1; $i<=5; $i++)
+                            @if($i <= $fullStars)
+                                <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+                            @elseif($i == $fullStars + 1 && $halfStar)
+                                <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                                    <defs>
+                                        <linearGradient id="half-star-{{ $product->id }}">
+                                            <stop offset="50%" stop-color="currentColor"/>
+                                            <stop offset="50%" stop-color="#E5E7EB"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <path fill="url(#half-star-{{ $product->id }})" d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                </svg>
+                            @else
+                                <svg class="w-4 h-4 text-gray-300 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+                            @endif
                         @endfor
-                        <span class="text-gray-400 ml-2">(4.5)</span> {{-- Hardcoded rating for now as review logic is complex --}}
+                        <span class="text-gray-400 ml-2">({{ number_format($averageRating, 1) }}) • {{ $totalReviews }} Reviews</span>
                     </div>
                 </div>
 
@@ -66,6 +86,7 @@
                     <p>{{ $product->description }}</p>
                 </div>
 
+                @if($product->stock > 0)
                 {{-- Quantity Selector --}}
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
@@ -99,8 +120,82 @@
                         </button>
                     </form>
                 </div>
+                @endif
+                
+                {{-- Store Info --}}
+                 <div class="mt-10 pt-6 border-t border-gray-100 flex items-center gap-4">
+                    <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xl font-bold">
+                        {{ substr($product->store->name, 0, 1) }}
+                    </div>
+                    <div>
+                        <div class="text-sm text-gray-500">Sold by</div>
+                        <div class="font-semibold text-gray-900">{{ $product->store->name }}</div>
+                    </div>
+                 </div>
 
-                <script>
+                 {{-- Reviews Section --}}
+                 <div class="mt-12 border-t border-gray-200 pt-10">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6">Customer Reviews ({{ $totalReviews }})</h3>
+
+                    {{-- Review Form --}}
+                    @if($canReview)
+                        <div class="bg-gray-50 p-6 rounded-lg mb-8">
+                            <h4 class="font-semibold text-gray-900 mb-4">Write a Review</h4>
+                            <form action="{{ route('products.review', $product->slug) }}" method="POST">
+                                @csrf
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Rating</label>
+                                    <div class="flex gap-2">
+                                        @for($i=1; $i<=5; $i++)
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="rating" value="{{ $i }}" class="hidden peer" required>
+                                            <svg class="w-8 h-8 text-gray-300 peer-checked:text-yellow-500 hover:text-yellow-400 fill-current transition-colors" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+                                        </label>
+                                        @endfor
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="review" class="block text-sm font-medium text-gray-700 mb-1">Your Review</label>
+                                    <textarea name="review" id="review" rows="3" class="w-full border-gray-300 rounded-md shadow-sm focus:border-black focus:ring-black" required placeholder="Share your thoughts about the product..."></textarea>
+                                </div>
+                                <button type="submit" class="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800 transition text-sm font-medium">Submit Review</button>
+                            </form>
+                        </div>
+                    @elseif($hasReviewed)
+                        <div class="bg-green-50 p-4 rounded-lg mb-8 text-green-800 text-sm">
+                            You have already reviewed this product. Thank you!
+                        </div>
+                    @endif
+
+                    {{-- Reviews List --}}
+                    <div class="space-y-6">
+                        @forelse($product->productReviews()->latest()->get() as $review)
+                            <div class="border-b border-gray-100 pb-6 last:border-0">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-xs font-bold text-gray-500">
+                                            {{ substr($review->transaction->buyer->user->name ?? 'A', 0, 1) }}
+                                        </div>
+                                        <div>
+                                            <span class="font-medium text-gray-900 block text-sm">{{ $review->transaction->buyer->user->name ?? 'Anonymous' }}</span>
+                                            <span class="text-xs text-gray-500">{{ $review->created_at->diffForHumans() }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex text-yellow-500 text-xs">
+                                        @for($i=0; $i<$review->rating; $i++)
+                                            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+                                        @endfor
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 text-sm pl-10">{{ $review->review }}</p>
+                            </div>
+                        @empty
+                            <p class="text-gray-500 text-center py-6">No reviews yet. Be the first to review!</p>
+                        @endforelse
+                    </div>
+                 </div>
+
+                 <script>
                     function updateQuantity(change) {
                         const input = document.getElementById('visible-quantity');
                         let newValue = parseInt(input.value) + change;
@@ -125,17 +220,6 @@
                         document.getElementById('cart-quantity').value = value;
                     }
                 </script>
-
-                 {{-- Store Info --}}
-                 <div class="mt-10 pt-6 border-t border-gray-100 flex items-center gap-4">
-                    <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xl font-bold">
-                        {{ substr($product->store->name, 0, 1) }}
-                    </div>
-                    <div>
-                        <div class="text-sm text-gray-500">Sold by</div>
-                        <div class="font-semibold text-gray-900">{{ $product->store->name }}</div>
-                    </div>
-                 </div>
             </div>
         </div>
     </div>

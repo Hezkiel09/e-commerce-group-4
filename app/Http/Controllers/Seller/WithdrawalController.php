@@ -55,36 +55,30 @@ class WithdrawalController extends Controller
             return redirect()->back()->with('error', 'Insufficient balance.');
         }
 
-        // Create withdrawal request
-        $withdrawal = \App\Models\Withdrawal::create([
-            'store_balance_id' => $store->balance->id,
-            'amount' => $validated['amount'],
-            'bank_name' => $validated['bank'],
-            'bank_account_number' => $validated['account_number'],
-            'bank_account_name' => $validated['account_name'],
-            'status' => 'pending',
-        ]);
+        \Illuminate\Support\Facades\DB::transaction(function () use ($store, $validated) {
+            // Create withdrawal request
+            $withdrawal = \App\Models\Withdrawal::create([
+                'store_balance_id' => $store->balance->id,
+                'amount' => $validated['amount'],
+                'bank_name' => $validated['bank'],
+                'bank_account_number' => $validated['account_number'],
+                'bank_account_name' => $validated['account_name'],
+                'status' => 'pending',
+            ]);
 
-        // Decrement Store Balance
-        $store->balance->decrement('balance', $validated['amount']);
+            // Decrement Store Balance
+            $store->balance->decrement('balance', $validated['amount']);
 
-        // Record Balance History
-        \App\Models\StoreBalanceHistory::create([
-            'store_balance_id' => $store->balance->id,
-            'type' => 'withdraw',
-            'reference_id' => $withdrawal->id,
-            'reference_type' => \App\Models\Withdrawal::class,
-            'amount' => $validated['amount'], // Positive or negative? Model has decimal amount. 
-            // Checkout used positive for income. Logic usually is: type determines sign, or amount determines sign.
-            // Let's use negative for withdraw to be safe structurally, or positive if display logic handles it.
-            // Previous code used negative. Schema just says decimal.
-            // Let's stick to negative for debit to be clear it reduces balance, 
-            // UNLESS type 'withdraw' implies it.
-            // Let's check schema: `type` enum ['income', 'withdraw'].
-            // If I put negative, it effectively subtracts.
-            'amount' => -$validated['amount'], 
-            'remarks' => 'Withdrawal request #' . $withdrawal->id,
-        ]);
+            // Record Balance History
+            \App\Models\StoreBalanceHistory::create([
+                'store_balance_id' => $store->balance->id,
+                'type' => 'withdraw',
+                'reference_id' => $withdrawal->id,
+                'reference_type' => \App\Models\Withdrawal::class,
+                'amount' => -$validated['amount'], 
+                'remarks' => 'Withdrawal request #' . $withdrawal->id,
+            ]);
+        });
 
         return redirect()->route('seller.withdrawals.index')
             ->with('success', 'Withdrawal request submitted successfully.');

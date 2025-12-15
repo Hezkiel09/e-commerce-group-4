@@ -40,6 +40,8 @@ Route::middleware('auth')->group(function () {
     // ✅ Detail Produk
     Route::get('/products/{product:slug}', [UserProductController::class, 'show'])
         ->name('products.show');
+    Route::post('/products/{product:slug}/review', [UserProductController::class, 'storeReview'])
+        ->name('products.review');
 
     // ✅ History transaksi
     Route::get('/history', [HistoryController::class, 'index'])

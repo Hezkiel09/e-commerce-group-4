@@ -82,4 +82,62 @@ class ProductController extends Controller
 
         return view('user.products.show', compact('product', 'averageRating', 'totalReviews', 'canReview', 'hasPurchased', 'hasReviewed'));
     }
+    public function storeReview(Request $request, Product $product)
+    {
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'review' => 'required|string|max:1000',
+        ]);
+
+        $user = auth()->user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $buyer = \App\Models\Buyer::where('user_id', $user->id)->first();
+        if (!$buyer) {
+            return back()->with('error', 'You need to complete your profile first.');
+        }
+
+        // 1. Verify Purchase (Must be PAID)
+        $transaction = \App\Models\Transaction::where('buyer_id', $buyer->id)
+            ->where('payment_status', 'paid')
+            ->whereHas('transactionDetails', function ($query) use ($product) {
+                $query->where('product_id', $product->id);
+            })
+            ->latest()
+            ->first();
+
+        if (!$transaction) {
+            return back()->with('error', 'You must purchase and pay for this product before reviewing.');
+        }
+
+        // 2. Check for Duplicate Review
+        $existingReview = \App\Models\ProductReview::where('transaction_id', $transaction->id)
+            ->where('product_id', $product->id)
+            ->exists();
+
+        // Also check loosely by user/product just in case they bought it multiple times (optional, but let's stick to 1 review per transaction or per product?)
+        // Requirement said: "setiap user (hanya) bisa memberi 1 review per produk".
+        // Let's check if this user has reviewed this product *ever*.
+        $hasReviewed = \App\Models\ProductReview::whereHas('transaction', function($query) use ($buyer) {
+                $query->where('buyer_id', $buyer->id);
+            })
+            ->where('product_id', $product->id)
+            ->exists();
+
+        if ($hasReviewed) {
+            return back()->with('error', 'You have already reviewed this product.');
+        }
+
+        // 3. Create Review
+        \App\Models\ProductReview::create([
+            'transaction_id' => $transaction->id,
+            'product_id' => $product->id,
+            'rating' => $request->rating,
+            'review' => $request->review,
+        ]);
+
+        return back()->with('success', 'Thank you for your review!');
+    }
 }

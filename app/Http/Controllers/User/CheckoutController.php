@@ -133,58 +133,60 @@ class CheckoutController extends Controller
         $ids = explode(',', $request->input('transaction_ids', ''));
         $transactions = \App\Models\Transaction::whereIn('id', $ids)->get();
 
-        foreach ($transactions as $transaction) {
-            if ($transaction->payment_status === 'paid') continue;
+        \Illuminate\Support\Facades\DB::transaction(function () use ($transactions) {
+            foreach ($transactions as $transaction) {
+                if ($transaction->payment_status === 'paid') continue;
 
-            // 1. Update Transaction Status
-            $transaction->update(['payment_status' => 'paid']);
+                // 1. Update Transaction Status
+                $transaction->update(['payment_status' => 'paid']);
 
-            // 2. Reduce Product Stock
-            foreach ($transaction->transactionDetails as $detail) {
-                $product = $detail->product;
-                if ($product) {
-                    $product->decrement('stock', $detail->qty);
+                // 2. Reduce Product Stock
+                foreach ($transaction->transactionDetails as $detail) {
+                    $product = $detail->product;
+                    if ($product) {
+                        $product->decrement('stock', $detail->qty);
+                    }
+                }
+
+                // 3. Update Seller Balance
+                // Logic: Seller receives Subtotal (Product Prices).
+                // Exclude shipping cost from the income added to store balance.
+                $income = $transaction->grand_total - $transaction->shipping_cost;
+                
+                $store = $transaction->store;
+                if ($store) {
+                    $balance = \App\Models\StoreBalance::firstOrCreate(
+                        ['store_id' => $store->id],
+                        ['balance' => 0]
+                    );
+                    $balance->increment('balance', $income);
+                    
+                    // Record History
+                    \App\Models\StoreBalanceHistory::create([
+                        'store_balance_id' => $balance->id,
+                        'type' => 'income',
+                        'reference_id' => $transaction->id,
+                        'reference_type' => \App\Models\Transaction::class,
+                        'amount' => $income,
+                        'remarks' => 'Sales Revenue from ' . $transaction->code,
+                    ]);
+
+                    
+                    // Sync to Orders table (Legacy Support)
+                    \App\Models\Order::create([
+                        'store_id' => $transaction->store_id,
+                        'user_id' => $transaction->buyer->user_id,
+                        'total_price' => $transaction->grand_total,
+                        'status' => 'pending',
+                        'shipping_address' => $transaction->address,
+                        'payment_status' => 'paid',
+                        'shipping_status' => 'unshipped',
+                        'created_at' => $transaction->created_at,
+                        'updated_at' => now(),
+                    ]);
                 }
             }
-
-            // 3. Update Seller Balance
-            // Logic: Seller receives Subtotal (Product Prices).
-            // Exclude shipping cost from the income added to store balance.
-            $income = $transaction->grand_total - $transaction->shipping_cost;
-            
-            $store = $transaction->store;
-            if ($store) {
-                $balance = \App\Models\StoreBalance::firstOrCreate(
-                    ['store_id' => $store->id],
-                    ['balance' => 0]
-                );
-                $balance->increment('balance', $income);
-                
-                // Record History
-                \App\Models\StoreBalanceHistory::create([
-                    'store_balance_id' => $balance->id,
-                    'type' => 'income',
-                    'reference_id' => $transaction->id,
-                    'reference_type' => \App\Models\Transaction::class,
-                    'amount' => $income,
-                    'remarks' => 'Sales Revenue from ' . $transaction->code,
-                ]);
-                ]);
-                
-                // Sync to Orders table (Legacy Support)
-                \App\Models\Order::create([
-                    'store_id' => $transaction->store_id,
-                    'user_id' => $transaction->buyer->user_id,
-                    'total_price' => $transaction->grand_total,
-                    'status' => 'pending',
-                    'shipping_address' => $transaction->address,
-                    'payment_status' => 'paid',
-                    'shipping_status' => 'unshipped',
-                    'created_at' => $transaction->created_at,
-                    'updated_at' => now(),
-                ]);
-            }
-        }
+        });
 
         return redirect()->route('history')->with('success', 'Payment successful! Transaction details processed.');
     }

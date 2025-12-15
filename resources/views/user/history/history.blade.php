@@ -47,6 +47,12 @@
                             <span class="font-medium text-gray-700">{{ $transaction->store->name ?? 'Store Unknown' }}</span>
                         </div>
                         <div>
+                            @if($transaction->payment_status === 'unpaid')
+                                <a href="{{ route('checkout.payment', ['ids' => $transaction->id]) }}" 
+                                   class="px-4 py-2 bg-black text-white text-xs font-bold rounded-full hover:bg-gray-800 transition mr-2">
+                                    Pay Now
+                                </a>
+                            @endif
                             <span class="px-3 py-1 rounded-full text-xs font-medium 
                                 {{ $transaction->payment_status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }}">
                                 {{ ucfirst($transaction->payment_status) }}
